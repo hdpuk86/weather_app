@@ -1,0 +1,32 @@
+<h1>Edit <%= @heat_rating.name %> </h1>
+
+<%= form_with(model: @heat_rating, local: true) do |form| %>
+  <% if @heat_rating.errors.any? %>
+    <p>Failed to save...</p>
+
+    <ul>
+      <% @heat_rating.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+    </ul>
+  <% end %>
+
+  <div>
+    <%= form.label :name %>
+    <%= form.text_field :name %>
+  </div>
+
+  <div>
+    <%= form.label 'Minimum temperature' %>
+    <%= form.number_field :min_temp %>
+  </div>
+
+  <div>
+    <%= form.label 'Maximum temperature' %>
+    <%= form.number_field :max_temp %>
+  </div>
+
+  <div>
+    <%= form.submit %>
+  </div>
+<% end %>

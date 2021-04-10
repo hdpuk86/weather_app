@@ -5,3 +5,7 @@
 #
 #   movies = Movie.create([{ name: 'Star Wars' }, { name: 'Lord of the Rings' }])
 #   Character.create(name: 'Luke', movie: movies.first)
+
+HeatRating.create!(min_temp: -100, max_temp: 12, name: 'Cold')
+HeatRating.create!(min_temp: 13, max_temp: 25, name: 'Warm')
+HeatRating.create!(min_temp: 26, max_temp: 100, name: 'Hot')
