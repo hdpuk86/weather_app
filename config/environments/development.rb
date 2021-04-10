@@ -1,3 +1,5 @@
+WEATHER_API_KEY = ENV['WEATHER_API_KEY'] || ''
+
 require "active_support/core_ext/integer/time"
 
 Rails.application.configure do

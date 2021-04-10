@@ -1,24 +1,55 @@
-# README
+# Weather App
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+## Setting up
 
-Things you may want to cover:
+Ruby Version: 2.5.7
 
-* Ruby version
+Rails Version: 6.1.3.1
 
-* System dependencies
+---
 
-* Configuration
+Create a .env file and add the API Key
+```
+touch .env
+echo 'WEATHER_API_KEY="key"' >> .env
+```
 
-* Database creation
+Install Ruby gems:
+```
+bundle install
+```
 
-* Database initialization
+Install Javascript packages:
+```
+yarn install
+```
 
-* How to run the test suite
+Create & migrate the database:
+```
+rails db:create db:migrate
+```
 
-* Services (job queues, cache servers, search engines, etc.)
+Run the seeds:
+```
+rails db:seed
+```
 
-* Deployment instructions
+Start server, application should run on `localhost:3000`:
+```
+rails server
+```
 
-* ...
+## Running tests with MiniTest
+
+```
+# Run all tests
+rails test
+
+# Run a specific test file:
+rails test test/controllers/foo_controller_test.rb
+
+# Run a specific test:
+rails test test/controllers/foo_controller_test.rb:4
+```
+
+---
