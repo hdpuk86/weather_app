@@ -1,11 +1,16 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
-one:
-  min_temp: 0
-  max_temp: 10
+cold:
+  min_temp: -100
+  max_temp: 12
   name: 'Cold'
 
-two:
-  min_temp: 11
-  max_temp: 20
+warm:
+  min_temp: 13
+  max_temp: 25
+  name: 'Warm'
+
+hot:
+  min_temp: 26
+  max_temp: 100
   name: 'Hot'

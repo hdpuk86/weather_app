@@ -19,7 +19,7 @@ class Forecast < ApplicationRecord
   def perform_forecast
     forecast_data = WeatherServices::Forecaster.new(self.postcode).perform
     error_message = forecast_data.dig('error', 'message')
-    self.errors.add(:service, error_message) if error_message.present?
+    self.errors.add(:service_error, error_message) if error_message.present?
 
     self.country = forecast_data.dig('location', 'country') || ''
     forecastday = forecast_data.dig('forecast', 'forecastday') || [{}]

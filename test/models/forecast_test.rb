@@ -6,25 +6,13 @@ class ForecastTest < ActiveSupport::TestCase
   end
 
   def test_can_create
-    stub_request(:get, 'http://api.weatherapi.com/v1/forecast.json')
-      .with(query: {
-        q: @postcode,
-        days: '0',
-        key: WEATHER_API_KEY
-      })
-      .to_return(status: 200, body: JSON.generate(response_data('UK', 10.4)))
+    stub_forcaster_api!(country: 'UK', max_temp: 10.4, postcode: @postcode)
 
     assert Forecast.create(postcode: @postcode)
   end
 
   def test_country_must_be_in_accepted_countries_list
-    stub_request(:get, 'http://api.weatherapi.com/v1/forecast.json')
-      .with(query: {
-        q: @postcode,
-        days: '0',
-        key: WEATHER_API_KEY
-      })
-      .to_return(status: 200, body: JSON.generate(response_data('AUS', 10.4)))
+    stub_forcaster_api!(country: 'AUS', max_temp:  10.4, postcode: @postcode)
 
     invalid_country = Forecast.new(postcode: @postcode)
     assert_not invalid_country.save
@@ -32,13 +20,7 @@ class ForecastTest < ActiveSupport::TestCase
   end
 
   def test_max_temp_must_be_present
-    stub_request(:get, 'http://api.weatherapi.com/v1/forecast.json')
-      .with(query: {
-        q: @postcode,
-        days: '0',
-        key: WEATHER_API_KEY
-      })
-      .to_return(status: 200, body: JSON.generate(response_data('UK', nil)))
+    stub_forcaster_api!(country: 'UK', max_temp: nil, postcode: @postcode)
 
     no_max_temp = Forecast.new(postcode: @postcode)
     assert_not no_max_temp.save
@@ -46,13 +28,7 @@ class ForecastTest < ActiveSupport::TestCase
   end
 
   def test_max_temp_must_be_numeric
-    stub_request(:get, 'http://api.weatherapi.com/v1/forecast.json')
-      .with(query: {
-        q: @postcode,
-        days: '0',
-        key: WEATHER_API_KEY
-      })
-      .to_return(status: 200, body: JSON.generate(response_data('UK', 'invalid')))
+    stub_forcaster_api!(country: 'UK', max_temp: 'invalid', postcode: @postcode)
 
     no_max_temp = Forecast.new(postcode: @postcode, max_temp: 'max_temp')
     assert_not no_max_temp.save
@@ -60,13 +36,7 @@ class ForecastTest < ActiveSupport::TestCase
   end
 
   def test_postcode_must_be_present
-    stub_request(:get, 'http://api.weatherapi.com/v1/forecast.json')
-      .with(query: {
-        q: '',
-        days: '0',
-        key: WEATHER_API_KEY
-      })
-      .to_return(status: 200, body: JSON.generate(response_data('UK', 10.4)))
+    stub_forcaster_api!(country: 'UK', max_temp: 10.4, postcode: '')
 
     no_postcode = Forecast.new
     assert_not no_postcode.save
@@ -74,20 +44,69 @@ class ForecastTest < ActiveSupport::TestCase
   end
 
   def test_UK_postcode_format_is_validated
-    stub_request(:get, 'http://api.weatherapi.com/v1/forecast.json')
-      .with(query: {
-        q: '1111',
-        days: '0',
-        key: WEATHER_API_KEY
-      })
-      .to_return(status: 200, body: JSON.generate(response_data('UK', 10.4)))
+    stub_forcaster_api!(country: 'UK', max_temp: 10.4, postcode: '1111')
 
     invalid = Forecast.new(postcode: '1111')
     invalid.save
     assert_equal 'Postcode must be in a valid UK format', invalid.errors.full_messages.first
   end
 
+  def test_has_service_error_message_if_service_fails
+    stub_request(:get, 'http://api.weatherapi.com/v1/forecast.json')
+      .with(query: {
+        q: @postcode,
+        days: '0',
+        key: WEATHER_API_KEY
+      })
+      .to_return(status: 400, body: JSON.generate(error: {
+        code: '1010',
+        message: 'something went wrong'
+      }))
+
+    forecast = Forecast.create(postcode: @postcode)
+
+    assert_not forecast.save
+    assert_equal 'Service error something went wrong', forecast.errors.full_messages.first
+  end
+
+  def test_heat_rating__cold
+    expected_heat_rating = heat_ratings(:cold)
+    stub_forcaster_api!(country: 'UK', max_temp: expected_heat_rating.max_temp - 1, postcode: @postcode)
+
+    forecast = Forecast.create(postcode: @postcode)
+
+    assert_equal expected_heat_rating.name, forecast.heat_rating
+  end
+
+  def test_heat_rating__warm
+    expected_heat_rating = heat_ratings(:warm)
+    stub_forcaster_api!(country: 'UK', max_temp: expected_heat_rating.max_temp - 1, postcode: @postcode)
+
+    forecast = Forecast.create(postcode: @postcode)
+
+    assert_equal expected_heat_rating.name, forecast.heat_rating
+  end
+
+  def test_heat_rating__hot
+    expected_heat_rating = heat_ratings(:hot)
+    stub_forcaster_api!(country: 'UK', max_temp: expected_heat_rating.max_temp - 1, postcode: @postcode)
+
+    forecast = Forecast.create(postcode: @postcode)
+
+    assert_equal expected_heat_rating.name, forecast.heat_rating
+  end
+
   private
+
+  def stub_forcaster_api!(country:, max_temp:, postcode:)
+    stub_request(:get, 'http://api.weatherapi.com/v1/forecast.json')
+      .with(query: {
+        q: postcode,
+        days: '0',
+        key: WEATHER_API_KEY
+      })
+      .to_return(status: 200, body: JSON.generate(response_data(country, max_temp)))
+  end
 
   def response_data(country, temp)
     {
@@ -100,15 +119,6 @@ class ForecastTest < ActiveSupport::TestCase
             maxtemp_c: temp
           }
         }]
-      }
-    }
-  end
-
-  def error_data
-    {
-      error: {
-        code: '1010',
-        message: 'Something went wrong'
       }
     }
   end

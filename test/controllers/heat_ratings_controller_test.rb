@@ -2,7 +2,7 @@ require "test_helper"
 
 class HeatRatingsControllerTest < ActionDispatch::IntegrationTest
   def test_should_get_edit
-    get edit_heat_rating_url(heat_ratings(:one))
+    get edit_heat_rating_url(heat_ratings(:cold))
     assert_response :success
   end
 
