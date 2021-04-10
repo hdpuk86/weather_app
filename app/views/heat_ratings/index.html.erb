@@ -1,0 +1,23 @@
+<h1>Heat Ratings</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Minimum temp</th>
+      <th>Maximum temp</th>
+      <th></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @heat_ratings.each do |heat_rating| %>
+      <tr>
+        <td><%= heat_rating.name %></td>
+        <td><%= heat_rating.min_temp %></td>
+        <td><%= heat_rating.max_temp %></td>
+        <td><%= link_to 'Edit', edit_heat_rating_path(heat_rating) %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

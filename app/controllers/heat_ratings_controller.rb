@@ -1,5 +1,9 @@
 class HeatRatingsController < ApplicationController
-  before_action :set_heat_rating
+  before_action :set_heat_rating, except: :index
+
+  def index
+    @heat_ratings = HeatRating.all.order(:min_temp)
+  end
 
   def edit
   end
