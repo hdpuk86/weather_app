@@ -1,0 +1,11 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  country: 'UK'
+  postcode: 'A11 1AA'
+  max_temp: 1.5
+
+two:
+  country: 'UK'
+  postcode: 'B9 9BB'
+  max_temp: 32.0

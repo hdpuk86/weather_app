@@ -1,8 +1,5 @@
 module WeatherServices
-  class ForecastGenerator
-    attr_reader :postcode
-    attr_reader :days
-
+  class Forecaster
     def initialize(postcode, days = 0)
       @postcode = postcode
       @days = days
@@ -12,17 +9,15 @@ module WeatherServices
       response = HTTParty.get('http://api.weatherapi.com/v1/forecast.json', {
         query: {
           key: WEATHER_API_KEY,
-          q: self.postcode,
-          days: self.days
+          q: postcode,
+          days: days
         }
       })
-      response_body = JSON.parse(response.body)
-
-      if response.ok?
-        response_body
-      else
-        response_body.dig('error')
-      end
+      JSON.parse(response.body)
     end
+
+    private
+
+    attr_reader :postcode, :days
   end
 end
