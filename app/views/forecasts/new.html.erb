@@ -1,0 +1,24 @@
+<h1>New forecast</h1>
+
+<%= form_with(model: @forecast, local: true) do |form| %>
+  <% if @forecast.errors.any? %>
+    <p>Failed to save...</p>
+
+    <ul>
+      <% @forecast.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+    </ul>
+  <% end %>
+
+  <div>
+    <%= form.label :postcode %>
+    <%= form.text_field :postcode, required: true %>
+  </div>
+
+  <div>
+    <%= form.submit %>
+  </div>
+<% end %>
+
+<%= button_to 'Home', root_url, method: :get %>
