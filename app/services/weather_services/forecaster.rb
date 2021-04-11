@@ -13,7 +13,13 @@ module WeatherServices
           days: days
         }
       })
-      JSON.parse(response.body)
+      if response.success?
+        JSON.parse(response.body)
+      else
+        error_message = JSON.parse(response.body).dig('error', 'message')
+        Rails.logger.error("WeatherServices::Forecaster - Response Code: #{response.code}, Error: #{error_message}")
+        raise WeatherServicesError.new(error_message)
+      end
     end
 
     private

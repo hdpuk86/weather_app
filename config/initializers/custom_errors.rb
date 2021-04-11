@@ -1,0 +1,2 @@
+  class WeatherServicesError < StandardError
+  end

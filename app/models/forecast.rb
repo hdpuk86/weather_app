@@ -1,11 +1,9 @@
 class Forecast < ApplicationRecord
   ACCEPTED_COUNTRIES = ['UK'].freeze
-  before_validation :perform_forecast, on: :create
 
   validates :postcode, presence: true
   validates_with UkPostcodeValidator
-  validates :max_temp, numericality: true
-  validates :country, inclusion: { in: ACCEPTED_COUNTRIES, message: 'is not accepted' }
+  before_create :perform_forecast
 
   def heat_rating
     ratings = HeatRating.where('? BETWEEN min_temp AND max_temp', self.max_temp)
@@ -17,12 +15,23 @@ class Forecast < ApplicationRecord
   private
 
   def perform_forecast
-    forecast_data = WeatherServices::Forecaster.new(self.postcode).perform
-    error_message = forecast_data.dig('error', 'message')
-    self.errors.add(:service_error, error_message) if error_message.present?
+    begin
+      forecast_data = WeatherServices::Forecaster.new(self.postcode).perform
+      self.country = forecast_data.dig('location', 'country') || ''
+      validate_country!
 
-    self.country = forecast_data.dig('location', 'country') || ''
-    forecastday = forecast_data.dig('forecast', 'forecastday') || [{}]
-    self.max_temp = forecastday.first.dig('day', 'maxtemp_c')
+      forecastday = forecast_data.dig('forecast', 'forecastday') || [{}]
+      self.max_temp = forecastday.first.dig('day', 'maxtemp_c')
+    rescue WeatherServicesError => e
+      self.errors.add(:service, "error: #{e}")
+      throw(:abort)
+    end
+  end
+
+  def validate_country!
+    unless ACCEPTED_COUNTRIES.include?(self.country)
+      self.errors.add(:postcode, "country is not accepted")
+      throw(:abort)
+    end
   end
 end

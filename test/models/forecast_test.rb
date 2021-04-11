@@ -16,23 +16,7 @@ class ForecastTest < ActiveSupport::TestCase
 
     invalid_country = Forecast.new(postcode: @postcode)
     assert_not invalid_country.save
-    assert_equal 'Country is not accepted', invalid_country.errors.full_messages.first
-  end
-
-  def test_max_temp_must_be_present
-    stub_forcaster_api!(country: 'UK', max_temp: nil, postcode: @postcode)
-
-    no_max_temp = Forecast.new(postcode: @postcode)
-    assert_not no_max_temp.save
-    assert_equal 'Max temp is not a number', no_max_temp.errors.full_messages.first
-  end
-
-  def test_max_temp_must_be_numeric
-    stub_forcaster_api!(country: 'UK', max_temp: 'invalid', postcode: @postcode)
-
-    no_max_temp = Forecast.new(postcode: @postcode, max_temp: 'max_temp')
-    assert_not no_max_temp.save
-    assert_equal 'Max temp is not a number', no_max_temp.errors.full_messages.first
+    assert_equal 'Postcode country is not accepted', invalid_country.errors.full_messages.first
   end
 
   def test_postcode_must_be_present
@@ -66,7 +50,7 @@ class ForecastTest < ActiveSupport::TestCase
     forecast = Forecast.create(postcode: @postcode)
 
     assert_not forecast.save
-    assert_equal 'Service error something went wrong', forecast.errors.full_messages.first
+    assert_equal 'Service error: something went wrong', forecast.errors.full_messages.first
   end
 
   def test_heat_rating__cold
