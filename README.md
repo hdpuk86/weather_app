@@ -1,5 +1,13 @@
 # Weather App
 
+The app should open on a page with 2 links:
+
+'Manage heat ratings' - This takes you to an index where you can view & edit the heat limits.
+
+'Get a forecast' - where you can lookup a forecast using a UK postcode.
+
+After creating a forecast the app will redirect you back to the home page and you should see your forecasts.
+
 ## Setting up
 
 Ruby Version: 2.5.7
@@ -7,6 +15,12 @@ Ruby Version: 2.5.7
 Rails Version: 6.1.3.1
 
 ---
+
+Clone:
+```
+git clone git@github.com:hdpuk86/weather_app.git
+cd weather_app
+```
 
 Create a .env file and add the API Key
 ```
