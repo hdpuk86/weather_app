@@ -11,6 +11,12 @@
   </head>
 
   <body>
+    <nav>
+      <%= link_to 'Home', root_url %>
+      <%= link_to 'Manage heat ranges', heat_ratings_url %>
+      <%= link_to 'Get a forecast', new_forecast_url %>
+    </nav>
+
     <%= yield %>
   </body>
 </html>
